@@ -1,59 +1,112 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📊 Store Dashboard - 店舗売上管理ダッシュボード
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+複数店舗の売上データを一元管理し、可視化するWebアプリケーション。
 
-## About Laravel
+## 📸 スクリーンショット
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### ダッシュボード
+KPIカード4種 + Chart.jsによる売上推移・店舗比較・カテゴリ構成比グラフ
+![Dashboard](docs/screenshots/dashboard.png)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 売上一覧
+検索・ソート・ページネーション・Excel/CSVエクスポート対応
+![Sales Index](docs/screenshots/sales-index.png)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 売上登録
+店舗・商品を選択して売上を登録。単価は商品マスタから自動計算
+![Sales Create](docs/screenshots/sales-create.png)
 
-## Learning Laravel
+### 店舗登録
+エリア紐付き・営業状態管理付きの店舗マスタ管理
+![Store Create](docs/screenshots/store-create.png)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## ⚡ 技術スタック
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+| カテゴリ | 技術 |
+|---------|------|
+| Backend | PHP 8.3 / Laravel 11 |
+| Database | PostgreSQL 16 |
+| Frontend | Blade / Tailwind CSS / Chart.js |
+| Infra | Docker / Docker Compose |
+| CI/CD | GitHub Actions |
+| Test | PHPUnit（43テスト全PASS） |
 
-## Laravel Sponsors
+## 🚀 主な機能
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- **ダッシュボード**: KPIカード（今月売上・先月売上・目標達成率・売上件数）、月別売上推移（折れ線）、店舗別売上比較（横棒）、カテゴリ別構成比（ドーナツ）
+- **売上管理**: CRUD、店舗・期間・商品名での検索、売上日/数量/合計でのソート、ページネーション
+- **データ入出力**: Excel/CSVエクスポート（検索条件を維持したまま出力）
+- **店舗管理**: CRUD、エリア→店舗の階層構造、営業状態フラグ
+- **認証・権限**: admin/manager/staff のロール制御
 
-### Premium Partners
+## 🔧 こだわったポイント
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### パフォーマンス
+- N+1問題の解消（Eager Loading）
+- 売上集計クエリに複合インデックス（store_id, sale_date）を設計
+- PhpSpreadsheetによるExcelエクスポート
 
-## Contributing
+### テスト
+- 43件のFeature Test / Unit Test（全PASS）
+- ダッシュボード表示・CRUD操作・バリデーション・エクスポートをカバー
+- GitHub Actionsで自動テスト実行
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### セキュリティ
+- CSRF対策（Laravel標準）
+- SQLインジェクション対策（Eloquent ORM）
+- XSS対策（Bladeのエスケープ）
+- バリデーションの徹底
 
-## Code of Conduct
+## 🏗️ セットアップ
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 前提条件
 
-## Security Vulnerabilities
+- Docker Desktop
+- Git
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 手順
+```bash
+git clone https://github.com/kt040403/store-dashboard.git
+cd store-dashboard
+chmod +x setup.sh
+./setup.sh
+```
 
-## License
+ブラウザで http://localhost:8080 にアクセス
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### デモアカウント
+
+| Role | Email | Password |
+|------|-------|----------|
+| 管理者 | admin@example.com | password |
+| マネージャー | tanaka@example.com | password |
+| スタッフ | sato@example.com | password |
+
+### 便利コマンド
+```bash
+make up       # コンテナ起動
+make down     # コンテナ停止
+make shell    # appコンテナに入る
+make fresh    # DB初期化（migrate:fresh --seed）
+make test     # テスト実行（43テスト）
+make lint     # コードフォーマット（Laravel Pint）
+```
+
+## 📐 DB設計
+
+7テーブル構成（areas, stores, users, categories, products, sales, monthly_targets）
+
+主要なリレーション:
+- Area → Store（1:N）
+- Store → Sale（1:N）
+- Product → Sale（1:N）
+- Category → Product（1:N）
+- Store → MonthlyTarget（1:N）
+- Store → User（1:N）
+
+## 👤 作者
+
+**Kouta** - 元寿司職人 → PHP バックエンドエンジニア
+
+- Portfolio: https://portfolio-chi-sage-eud0tx0pxw.vercel.app
+- GitHub: [@kt040403](https://github.com/kt040403)
