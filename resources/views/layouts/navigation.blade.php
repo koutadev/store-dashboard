@@ -18,6 +18,9 @@
                     <x-nav-link :href="route('sales.index')" :active="request()->routeIs('sales.*')">
                         売上管理
                     </x-nav-link>
+                    <x-nav-link :href="route('stores.index')" :active="request()->routeIs('stores.*')">
+                        店舗管理
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -75,6 +78,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('sales.index')" :active="request()->routeIs('sales.*')">
                 売上管理
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('stores.index')" :active="request()->routeIs('stores.*')">
+                店舗管理
             </x-responsive-nav-link>
         </div>
 
