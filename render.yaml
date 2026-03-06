@@ -1,0 +1,46 @@
+services:
+  - type: web
+    name: store-dashboard
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: APP_NAME
+        value: "Store Dashboard"
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_URL
+        fromRender: true
+      - key: APP_KEY
+        generateValue: true
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: store-dashboard-db
+          property: host
+      - key: DB_PORT
+        value: "5432"
+      - key: DB_DATABASE
+        fromDatabase:
+          name: store-dashboard-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: store-dashboard-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: store-dashboard-db
+          property: password
+      - key: SESSION_DRIVER
+        value: cookie
+      - key: CACHE_STORE
+        value: array
+
+databases:
+  - name: store-dashboard-db
+    plan: free
+    databaseName: store_dashboard
+    user: store_dashboard_user
