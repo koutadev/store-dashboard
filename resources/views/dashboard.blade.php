@@ -1,8 +1,20 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            📊 ダッシュボード
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                📊 ダッシュボード
+            </h2>
+            <form method="GET" action="{{ route('dashboard') }}" class="flex items-center gap-3">
+                <label class="text-sm text-gray-600">表示月:</label>
+                <select name="month" onchange="this.form.submit()" class="border-gray-300 rounded-md shadow-sm text-sm">
+                    @foreach ($months as $m)
+                        <option value="{{ $m }}" {{ $selectedMonth === $m ? 'selected' : '' }}>
+                            {{ \Carbon\Carbon::createFromFormat('Y-m', $m)->format('Y年n月') }}
+                        </option>
+                    @endforeach
+                </select>
+            </form>
+        </div>
     </x-slot>
 
     <div class="py-12">
@@ -10,9 +22,9 @@
 
             {{-- KPIカード --}}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                {{-- 今月の売上 --}}
+                {{-- 選択月の売上 --}}
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <div class="text-sm text-gray-500">今月の売上</div>
+                    <div class="text-sm text-gray-500">{{ \Carbon\Carbon::createFromFormat('Y-m', $selectedMonth)->format('Y年n月') }}の売上</div>
                     <div class="text-2xl font-bold text-gray-900 mt-1">
                         ¥{{ number_format($currentMonthSales) }}
                     </div>
@@ -21,9 +33,9 @@
                     </div>
                 </div>
 
-                {{-- 先月の売上 --}}
+                {{-- 前月の売上 --}}
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <div class="text-sm text-gray-500">先月の売上</div>
+                    <div class="text-sm text-gray-500">前月の売上</div>
                     <div class="text-2xl font-bold text-gray-900 mt-1">
                         ¥{{ number_format($lastMonthSales) }}
                     </div>
@@ -40,9 +52,9 @@
                     </div>
                 </div>
 
-                {{-- 今月の売上件数 --}}
+                {{-- 売上件数 --}}
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <div class="text-sm text-gray-500">今月の売上件数</div>
+                    <div class="text-sm text-gray-500">売上件数</div>
                     <div class="text-2xl font-bold text-gray-900 mt-1">
                         {{ number_format($currentMonthCount) }}件
                     </div>
@@ -59,13 +71,13 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {{-- 店舗別売上 --}}
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">店舗別売上（今月）</h3>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">店舗別売上（{{ \Carbon\Carbon::createFromFormat('Y-m', $selectedMonth)->format('n月') }}）</h3>
                     <canvas id="storeSalesChart" height="200"></canvas>
                 </div>
 
                 {{-- カテゴリ別売上 --}}
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">カテゴリ別売上（今月）</h3>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">カテゴリ別売上（{{ \Carbon\Carbon::createFromFormat('Y-m', $selectedMonth)->format('n月') }}）</h3>
                     <canvas id="categorySalesChart" height="200"></canvas>
                 </div>
             </div>
@@ -76,18 +88,32 @@
     @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // 月別売上推移（折れ線グラフ）
+        const monthlySalesData = {!! json_encode($monthlySales->pluck('total')) !!};
+        const monthlySalesLabels = {!! json_encode($monthlySales->pluck('month')) !!};
+        const selectedMonth = '{{ $selectedMonth }}';
+
+        // 選択月をハイライトするための背景色配列
+        const barColors = monthlySalesLabels.map(label =>
+            label === selectedMonth ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.1)'
+        );
+
         new Chart(document.getElementById('monthlySalesChart'), {
             type: 'line',
             data: {
-                labels: {!! json_encode($monthlySales->pluck('month')) !!},
+                labels: monthlySalesLabels,
                 datasets: [{
                     label: '売上合計',
-                    data: {!! json_encode($monthlySales->pluck('total')) !!},
+                    data: monthlySalesData,
                     borderColor: 'rgb(59, 130, 246)',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    backgroundColor: barColors,
                     fill: true,
                     tension: 0.3,
+                    pointBackgroundColor: monthlySalesLabels.map(label =>
+                        label === selectedMonth ? 'rgb(239, 68, 68)' : 'rgb(59, 130, 246)'
+                    ),
+                    pointRadius: monthlySalesLabels.map(label =>
+                        label === selectedMonth ? 6 : 3
+                    ),
                 }]
             },
             options: {
@@ -113,7 +139,6 @@
             }
         });
 
-        // 店舗別売上（横棒グラフ）
         new Chart(document.getElementById('storeSalesChart'), {
             type: 'bar',
             data: {
@@ -157,7 +182,6 @@
             }
         });
 
-        // カテゴリ別売上（ドーナツグラフ）
         new Chart(document.getElementById('categorySalesChart'), {
             type: 'doughnut',
             data: {
