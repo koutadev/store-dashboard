@@ -1,56 +1,62 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            📝 売上登録
+            📝 店舗登録
         </h2>
     </x-slot>
 
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                <form method="POST" action="{{ route('sales.store') }}">
+                <form method="POST" action="{{ route('stores.store') }}">
                     @csrf
 
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">店舗</label>
-                        <select name="store_id" class="w-full border-gray-300 rounded-md shadow-sm" required>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">エリア</label>
+                        <select name="area_id" class="w-full border-gray-300 rounded-md shadow-sm" required>
                             <option value="">選択してください</option>
-                            @foreach ($stores as $store)
-                                <option value="{{ $store->id }}" {{ old('store_id') == $store->id ? 'selected' : '' }}>
-                                    {{ $store->name }}
+                            @foreach ($areas as $area)
+                                <option value="{{ $area->id }}" {{ old('area_id') == $area->id ? 'selected' : '' }}>
+                                    {{ $area->name }}
                                 </option>
                             @endforeach
                         </select>
-                        @error('store_id') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+                        @error('area_id') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">商品</label>
-                        <select name="product_id" class="w-full border-gray-300 rounded-md shadow-sm" required>
-                            <option value="">選択してください</option>
-                            @foreach ($products as $product)
-                                <option value="{{ $product->id }}" {{ old('product_id') == $product->id ? 'selected' : '' }}>
-                                    {{ $product->name }}（¥{{ number_format($product->price) }}）
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('product_id') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+                        <label class="block text-sm font-medium text-gray-700 mb-1">店舗名</label>
+                        <input type="text" name="name" value="{{ old('name') }}" class="w-full border-gray-300 rounded-md shadow-sm" required>
+                        @error('name') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">数量</label>
-                        <input type="number" name="quantity" value="{{ old('quantity', 1) }}" min="1" class="w-full border-gray-300 rounded-md shadow-sm" required>
-                        @error('quantity') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+                        <label class="block text-sm font-medium text-gray-700 mb-1">店舗コード</label>
+                        <input type="text" name="code" value="{{ old('code') }}" placeholder="例: TK-004" class="w-full border-gray-300 rounded-md shadow-sm" required>
+                        @error('code') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">住所</label>
+                        <input type="text" name="address" value="{{ old('address') }}" class="w-full border-gray-300 rounded-md shadow-sm">
+                        @error('address') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">電話番号</label>
+                        <input type="text" name="phone" value="{{ old('phone') }}" placeholder="例: 03-1234-5678" class="w-full border-gray-300 rounded-md shadow-sm">
+                        @error('phone') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">売上日</label>
-                        <input type="date" name="sale_date" value="{{ old('sale_date', date('Y-m-d')) }}" class="w-full border-gray-300 rounded-md shadow-sm" required>
-                        @error('sale_date') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }} class="rounded border-gray-300 text-blue-600 shadow-sm">
+                            <span class="ml-2 text-sm text-gray-700">営業中</span>
+                        </label>
                     </div>
 
                     <div class="flex justify-between">
-                        <a href="{{ route('sales.index') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
+                        <a href="{{ route('stores.index') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
                             戻る
                         </a>
                         <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
